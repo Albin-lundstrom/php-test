@@ -22,7 +22,6 @@
             font-weight: bolder;
         }
         table{
-            margin-top: 2%;
             height: 40vh;
             text-align: center;
         }
@@ -58,6 +57,7 @@
             <th class="bg-danger">Sunday</th>
         </tr>
         <?php
+        include 'namnsdag.php';
 
         // POST METOD TO ADD AND SUBTRACT THE MONTH AND YEARS
 
@@ -70,7 +70,7 @@
             // ADDING MONTH
         if(isset( $_POST['btn1'])) {
             $_SESSION['clicks']++;
-            if($_SESSION['clicks'] >= 13 || $_SESSION['clicks'] <= 0){
+            if($_SESSION['clicks'] > 13 || $_SESSION['clicks'] < -1){
                 $_SESSION['clicks'] = 1;
             }
             if($_SESSION['clicks'] != 13){
@@ -82,100 +82,203 @@
                 $_SESSION['clicks'] = 1;
 
                 header('Location:http://localhost/te4/php-test/php/index.php?'.date('Y', strtotime(date('t') . date('M') . date('Y')))+$_SESSION['year'] .'-' .$_SESSION['clicks'] .'-' .'1'); 
-
-                
             }
         } 
             // SUBTRACTING MONTH
         elseif( isset( $_POST['btn2'] ) ){
             $_SESSION['clicks']--;
-            if($_SESSION['clicks'] >= 13 || $_SESSION['clicks'] <= 0){
+            if($_SESSION['clicks'] > 13 || $_SESSION['clicks'] < 0){
                 $_SESSION['clicks'] = 12;
             }
             if($_SESSION['clicks'] !== 0){
                 header('Location:http://localhost/te4/php-test/php/index.php?' .date('Y', strtotime(date('t') . date('M') . date('Y')))+$_SESSION['year'] .'-' .$_SESSION['clicks'] .'-' .'1'); 
             }
             else if($_SESSION['clicks'] == 0){
-                $_SESSION['year']--;
+                    $_SESSION['year']--;
 
-                $_SESSION['clicks'] = 12;
-
-                header('Location:http://localhost/te4/php-test/php/index.php?'.date('Y', strtotime(date('t') . date('M') . date('Y')))+$_SESSION['year'] .'-' .$_SESSION['clicks'] .'-' .'1');
-              
+                    $_SESSION['clicks'] = 12;
+    
+                    header('Location:http://localhost/te4/php-test/php/index.php?'.date('Y', strtotime(date('t') . date('M') . date('Y')))+$_SESSION['year'] .'-' .$_SESSION['clicks'] .'-' .'1');    
             }
         } 
             // RESETING TO TODAYS DATE
         elseif( isset( $_POST['reset'])){
             $_SESSION['clicks'] = date('m', strtotime(date('t') . date('M') . date('Y')));
             $_SESSION['year'] = 0;
-            header('Location:http://localhost/te4/php-test/php/index.php?'.date('Y', strtotime(date('t') . date('M') . date('Y'))) .'-' .date('m', strtotime(date('t') . date('M') . date('Y'))) .'-' .date('j', strtotime(date('t') . date('M') . date('Y'))));
+            header('Location:http://localhost/te4/php-test/php/index.php?'.date('Y') .'-' .date('m') .'-' .date('j'));
         } 
             // SUBMIT TO GET SHOW DATE
         elseif ( isset($_POST['Manual'])){
-            header('Location:http://localhost/te4/php-test/php/index.php?' .$_POST['Hex']);
+            header('Location:http://localhost/te4/php-test/php/index.php?' .$_POST['Manual']);
+            $_SESSION['clicks'] = date('m', strtotime(date('t', strtotime($_POST['Manual'])) .date('M', strtotime($_POST['Manual'])) .date('Y', strtotime($_POST['Manual']))));
+            $_SESSION['year'] = date('Y', strtotime(date('t', strtotime($_POST['Manual'])) .date('M', strtotime($_POST['Manual'])) .date('Y', strtotime($_POST['Manual'])))) -date('Y');
+            if(date("l", strtotime(date('j', strtotime($_POST['Manual'])) .date('M', strtotime($_POST['Manual'])) . date("Y", strtotime($_POST['Manual'])))) === "Friday"){
+                $friday = "FRIDAY";
+                $GLOBALS['friday'];
+            }
+            else{
+                $friday = "TEST";
+                $GLOBALS['friday'];
+            }
         }
+        //echo date("l", strtotime(date("j", strtotime($_POST['Manual']))) .date('M', strtotime($_POST['Manual'])) .date('Y', strtotime($_POST['Manual'])));
 
-            //ERROR CHECK THE VARIABLES
+            //ERROR CHECK FOR THE VARIABLES
         // echo 'clicks: '. $_SESSION['clicks'];
         // echo '<br>';
         // echo 'Year:' .$_SESSION['year'];
         // echo '<br>';
+
 
             // GETTING THE CURENT URL TO THEN SHOW THE DATES
         $current_url = $_SERVER['REQUEST_URI']; 
         $link_array = explode('?',$current_url);
         $page = end($link_array);
         $numberOfDays = date("t", strtotime($page));
-
+        
 
             // MAKEING IT SO THE DATE SHOW UNDER CORRECT WEEKDAY 
         $s = 0;
         do{
             $s++;
-        }while(date("l", strtotime($s .date('M', strtotime($page)) . date("Y"))) !== "Sunday");
+        }while(date("l", strtotime($s .date('M', strtotime($page)) . date("Y", strtotime($page)))) !== "Sunday");
+
+            //MAKEING THE EXTRA <td> AND THE FIRST WEEK NUBMER IF NEEDED
         for($s2 = 8; $s2 > $s; $s2--){
             if($s == 7){
                 break;
             }elseif($s2 == 8){
-            echo "<td>";
-                echo date("W", strtotime(-1 .date('M', strtotime($page)) . date("Y")));
-            echo "</td>";
+            echo "<th>";
+                $weekDate= date("W", strtotime(-1 .date('M', strtotime($page)) . date("Y", strtotime($page))));
+                if(substr($weekDate, 0, -1) == 0){
+                    echo substr($weekDate, 1);
+                }
+                else{
+                    echo $weekDate;
+                }
+            echo "</th>";
             $s2--;
             }
             echo("<td>");
             echo("</td>");
         }
+            //ERROR CHECK FOR THE VARIABLES
+        //echo $s2;
+        //echo "<br>";
+        //echo $s;
+        // foreach($namnsdag as $namn){
+        //     foreach($namn as $n){
+        //      echo  "<br>" .$name;
+        //     }
+        // }
             // CALANDER - THE PART THAT SHOWS
         for ($x = 1; $x <= $numberOfDays; $x++) {
+            $weekDate= date("W", strtotime($x .date('M', strtotime($page)) . date("Y", strtotime($page))));
+                if(substr($weekDate, 0, -1) == 0){
+                    $weekNum = substr($weekDate, 1);
+                }
+                else{
+                    $weekNum = $weekDate;
+                }
+            $dagsNum = date("z", strtotime($x .date('M', strtotime($page)) . date("Y" , strtotime($page)))) +1;
+            $name = $namnsdag[$dagsNum];
                 // IF ITS MONDAY THEN NEW TABLE ROW
-            if(date("l", strtotime($x .date('M', strtotime($page)) . date("Y"))) === "Monday"){
+            if(date("l", strtotime($x .date('M', strtotime($page)) . date("Y", strtotime($page)))) === "Monday"){
                 echo("<tr>");
-                echo "<td>";
-                echo date("W", strtotime($x .date('M', strtotime($page)) . date("Y")));
-                echo "</td>";
+                echo "<th>";
+                    echo $weekNum;
+                echo "</th>";
                 echo("<td>");
-                    echo date($x ." ");
-                    echo date("F", strtotime($x .date('M', strtotime($page)) . date("Y")));
-               echo("</td>");
+                echo "<span>";
+                    echo "<strong>";
+                        echo date($x ." ");
+                        echo date("F", strtotime($x .date('M', strtotime($page)) . date("Y" , strtotime($page))));
+                    echo "</strong>";
+                echo "</span>";
+                echo "<br>" .$dagsNum;
+                echo "<br>" ;
+                $l = count($name);
+                foreach($name as $n){
+                    if(count($name) >= 2){
+                        if($l == count($name)){
+                            $l++;
+                            echo $n .", ";
+                        }else{
+                            echo $n;
+                        }
+                    }
+                    else{
+                            echo $n;
+                    }
+                }
+                echo("</td>");
             }
                 // IF ITS SUNDAY ADD THE RIGHT CLASS AND THEN CLOSE THE TABLE ROW
-            elseif(date("l", strtotime($x .date('M', strtotime($page)) . date("Y"))) === "Sunday"){
+            elseif(date("l", strtotime($x .date('M', strtotime($page)) . date("Y", strtotime($page)))) === "Sunday"){
                 echo("<td class='text-danger'>");
-                    echo date($x ." ");
-                    echo date("F", strtotime($x .date('M', strtotime($page)) . date("Y")));
+                    echo "<span>";
+                        echo "<strong>";
+                            echo date($x ." ");
+                            echo date("F", strtotime($x .date('M', strtotime($page)) . date("Y" , strtotime($page))));
+                        echo "</strong>";
+                    echo "</span>";
+                    echo "<br>" .$dagsNum;
+                    echo "<br>";
+                    $l = count($name);
+                    foreach($name as $n){
+                        if(count($name) >= 2){
+                            if($l == count($name)){
+                                $l++;
+                                echo $n .", ";
+                            }else{
+                             echo $n;
+                            }
+                        }
+                        else{
+                             echo $n;
+                        }
+                    }
                echo("</td>");
                 echo("</tr>");
             }else{
                 // OTHERWISE JUST SHOW THE DATE
                echo("<td>");
-                    echo date($x ." ");
-                    echo date("F", strtotime($x .date('M', strtotime($page)) . date("Y")));
+                    echo "<span>";
+                        echo "<strong>";
+                            echo date($x ." ");
+                            echo date("F", strtotime($x .date('M', strtotime($page)) . date("Y" , strtotime($page))));
+                        echo "</strong>";
+                    echo "</span>";
+                    echo "<br>" .$dagsNum;
+                    echo "<br>";
+                    $l = count($name);
+                    foreach($name as $n){
+                        if(count($name) >= 2){
+                            if($l == count($name)){
+                                $l++;
+                                echo $n .", ";
+                            }else{
+                             echo $n;
+                            }
+                        }
+                        else{
+                             echo $n;
+                        }
+                    }
                echo("</td>");
             }
         }
         ?>
     </table>
 </div>
+<?php 
+    global $friday;
+    echo("<div class='container-lg'>");
+    echo "<h2 id='friday'>";
+    echo $friday;
+    echo "</h2>";
+    echo("</div>");
+?>
 <div class="container-lg" id="manual-date">
         <!-- THE FORM ELEMENT TO MANUALY WRITE THE DATE -->
     <form method="post" action="" class="input-group mb-3">
