@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel=stylesheet href=../css/style.css>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <script src="../js/bootstrap.min.js" defer></script>
     <style>
         body{
             background-color: #292b2c ;
+            color: white;
         }
         #manual-date{
             margin-top: 2%;
@@ -16,9 +16,8 @@
         .container-lg{
             padding: 0 !important;
         }
-        h1{
+        h1, h3{
             text-align: center;
-            color: white;
             font-weight: bolder;
         }
         table{
@@ -44,20 +43,9 @@
         PHP Calender
     </h1>
 </div>
-<div>
-    <table class="table table-striped table-dark">
-        <tr>
-            <th>Week Number</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-            <th class="bg-danger">Sunday</th>
-        </tr>
-        <?php
+    <?php
         include 'namnsdag.php';
+        include 'emoji.php';
 
         // POST METOD TO ADD AND SUBTRACT THE MONTH AND YEARS
 
@@ -121,21 +109,38 @@
                 $GLOBALS['friday'];
             }
         }
+
+              // GETTING THE CURENT URL TO THEN SHOW THE DATES
+            $current_url = $_SERVER['REQUEST_URI']; 
+            $link_array = explode('?',$current_url);
+            $page = end($link_array);
+            $numberOfDays = date("t", strtotime($page));
+            echo "<div>";
+            echo "<h3>"; 
+            echo date("F", strtotime($page));
+            echo " " .$emoji[$_SESSION['clicks'] -1][rand(0, 2)];
+            echo "</h3>";
+            echo "</div>";
+            echo "<div>";
+            echo "<table class='table table-striped table-dark'>";
+            echo "<tr>";
+            echo "<th>Week Number</th>";
+                echo "<th>Monday</th>";
+                echo"<th>Tuesday</th>";
+                echo "<th>Wednesday</th>";
+                echo"<th>Thursday</th>";
+                echo "<th>Friday</th>";
+                echo "<th>Saturday</th>";
+                echo "<th class='bg-danger'>Sunday</th>";
+            echo "</tr>";
+
         //echo date("l", strtotime(date("j", strtotime($_POST['Manual']))) .date('M', strtotime($_POST['Manual'])) .date('Y', strtotime($_POST['Manual'])));
 
             //ERROR CHECK FOR THE VARIABLES
-        // echo 'clicks: '. $_SESSION['clicks'];
-        // echo '<br>';
+        //echo 'clicks: '. $_SESSION['clicks'];
+        //echo '<br>';
         // echo 'Year:' .$_SESSION['year'];
         // echo '<br>';
-
-
-            // GETTING THE CURENT URL TO THEN SHOW THE DATES
-        $current_url = $_SERVER['REQUEST_URI']; 
-        $link_array = explode('?',$current_url);
-        $page = end($link_array);
-        $numberOfDays = date("t", strtotime($page));
-        
 
             // MAKEING IT SO THE DATE SHOW UNDER CORRECT WEEKDAY 
         $s = 0;
