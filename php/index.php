@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <script src="../js/bootstrap.min.js" defer></script>
     <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
         body{
             background-color: #292b2c ;
             color: white;
